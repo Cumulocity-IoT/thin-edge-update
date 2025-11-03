@@ -18,9 +18,6 @@ clean_podman_storage() {
     fi
 }
 
-# Check if running as root
-check_root
-
 # Clean podman storage to resolve graph driver issues
 clean_podman_storage
 
