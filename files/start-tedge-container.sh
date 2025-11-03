@@ -1,6 +1,53 @@
 #!/bin/bash
 set -e
 
+# Add this function near the top of the script, before get_highest_local_tag
+
+get_docker_username() {
+    local registry="$1"
+    local image_base="$2"
+    
+    # Try to find any image matching the pattern registry/*/image_base
+    local username=$(podman images --format '{{.Repository}}' | \
+                     grep "^${registry}/" | \
+                     grep "/${image_base}$" | \
+                     sed "s|^${registry}/||" | \
+                     sed "s|/${image_base}$||" | \
+                     head -n 1)
+    
+    if [ -n "$username" ]; then
+        echo "$username"
+        return 0
+    fi
+    
+    # Fallback: try to get from podman login
+    username=$(podman login --get-login "${registry}" 2>/dev/null || echo "")
+    if [ -n "$username" ]; then
+        echo "$username"
+        return 0
+    fi
+    
+    # No username found
+    return 1
+}
+
+# Then update your variables section:
+REGISTRY="docker.io"
+IMAGE_NAME="iot-thin-edge-solution"
+
+# Auto-detect Docker username
+DOCKER_USERNAME=$(get_docker_username "${REGISTRY}" "${IMAGE_NAME}")
+
+if [ -z "$DOCKER_USERNAME" ]; then
+    echo "Error: Could not determine Docker username. Please ensure:"
+    echo "  1. You have images tagged as ${REGISTRY}/username/${IMAGE_NAME}, or"
+    echo "  2. You are logged in to ${REGISTRY}"
+    exit 1
+fi
+
+echo "Using Docker username: ${DOCKER_USERNAME}"
+FULL_IMAGE="${REGISTRY}/${DOCKER_USERNAME}/${IMAGE_NAME}"
+
 # Function to get highest tag from local images only
 get_highest_local_tag() {
     local registry="$1"
@@ -16,8 +63,6 @@ get_highest_local_tag() {
         tail -1
 }
 
-REGISTRY="docker.io"
-IMAGE_NAME="iot-thin-edge-solution"
 FULL_IMAGE="${REGISTRY}/${IMAGE_NAME}"
 HIGHEST_TAG=$(get_highest_local_tag "$REGISTRY" "$IMAGE_NAME")
 
