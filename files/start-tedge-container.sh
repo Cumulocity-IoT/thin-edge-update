@@ -100,7 +100,7 @@ podman run -d \
 -p "8000:8000" \
 -p "8001:8001" \
 -v "tedge-data:/data/tedge" \
--v "/home/tedge/edge/scripts/config:/local-conf" \
+-v "/home/tedge/edge/config:/local-conf" \
 -e TEDGE_C8Y_OPERATIONS_AUTO_LOG_UPLOAD=always \
 -e TEDGE_MQTT_BRIDGE_BUILT_IN=true \
 -e TEDGE_DEVICE_CERT_PATH=/local-conf/tedge-certificate.pem \
