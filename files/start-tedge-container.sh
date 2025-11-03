@@ -51,19 +51,21 @@ FULL_IMAGE="${REGISTRY}/${DOCKER_USERNAME}/${IMAGE_NAME}"
 # Function to get highest tag from local images only
 get_highest_local_tag() {
     local registry="$1"
-    local image="$2"
-    local full_image="${registry}/${image}"
-
-    # Get local images matching the pattern
-    podman images --format "{{.Repository}}:{{.Tag}}" | \
-        grep "^${full_image}:" | \
-        sed "s|^${full_image}:||" | \
-        grep -E '^[0-9]+(\.[0-9]+)*$' | \
-        sort -V | \
-        tail -1
+    local username="$2"
+    local image="$3"
+    local full_image="${registry}/${username}/${image}"
+    
+    local highest=$(podman images --format '{{.Repository}}:{{.Tag}}' | \
+                    grep "^${full_image}:" | \
+                    sed "s|^${full_image}:||" | \
+                    grep -E '^[0-9]+(\.[0-9]+)*$' | \
+                    sort -V | \
+                    tail -1)
+    
+    echo "$highest"
 }
 
-HIGHEST_TAG=$(get_highest_local_tag "$REGISTRY" "$IMAGE_NAME")
+HIGHEST_TAG=$(get_highest_local_tag "$REGISTRY" "$DOCKER_USERNAME" "$IMAGE_NAME")
 
 if [[ -n "$HIGHEST_TAG" ]]; then
     echo "Highest local tag: $HIGHEST_TAG"
