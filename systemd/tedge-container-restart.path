@@ -1,0 +1,10 @@
+# /etc/xdg/systemd/user/tedge-container-restart.path
+[Unit]
+Description=Monitor tedge certificate on request
+
+[Path]
+PathModified=/home/tedge/edge/config/update.cfg
+Unit=tedge-container-restart.service
+
+[Install]
+WantedBy=default.target

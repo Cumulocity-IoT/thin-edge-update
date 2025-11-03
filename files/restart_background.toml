@@ -1,0 +1,29 @@
+operation = "restart_background"
+
+[init]
+action = "proceed"
+on_success = "executing"
+
+[executing]
+action = "proceed"
+on_success = "tedge-restart"
+
+[tedge-restart]
+background_script = '/etc/tedge/scripts/manage-restart.sh initiate-update'
+on_exec = "waiting-for-restart"
+
+[waiting-for-restart]
+action = "await-agent-restart"
+timeout_second = 180
+on_timeout = "timeout_restart"
+on_success = "successful"
+
+[timeout_restart]
+action = "proceed"
+on_success = "failed"
+
+[successful]
+action = "cleanup"
+
+[failed]
+action = "cleanup"

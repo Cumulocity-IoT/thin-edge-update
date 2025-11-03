@@ -1,0 +1,61 @@
+#!/bin/bash
+set -e
+
+# Function to get highest tag from local images only
+get_highest_local_tag() {
+    local registry="$1"
+    local image="$2"
+    local full_image="${registry}/${image}"
+
+    # Get local images matching the pattern
+    podman images --format "{{.Repository}}:{{.Tag}}" | \
+        grep "^${full_image}:" | \
+        sed "s|^${full_image}:||" | \
+        grep -E '^[0-9]+(\.[0-9]+)*$' | \
+        sort -V | \
+        tail -1
+}
+
+REGISTRY="docker.io"
+IMAGE_NAME="iot-thin-edge-solution"
+FULL_IMAGE="${REGISTRY}/${IMAGE_NAME}"
+HIGHEST_TAG=$(get_highest_local_tag "$REGISTRY" "$IMAGE_NAME")
+
+if [[ -n "$HIGHEST_TAG" ]]; then
+    echo "Highest local tag: $HIGHEST_TAG"
+    echo "Full image reference: ${FULL_IMAGE}:${HIGHEST_TAG}"
+
+    # Export variables for use in other scripts
+    export HIGHEST_TAG
+    export LATEST_IMAGE="${FULL_IMAGE}:${HIGHEST_TAG}"
+
+    echo "Variables set:"
+    echo "  HIGHEST_TAG=$HIGHEST_TAG"
+    echo "  LATEST_IMAGE=$LATEST_IMAGE"
+else
+    echo "Error: No local images found matching pattern ${FULL_IMAGE}:*" >&2
+    echo "Available local images:" >&2
+    podman images | grep -E "(REPOSITORY|${IMAGE_NAME})" || echo "None found"
+    exit 1
+fi
+
+# Set S6_CMD_WAIT_FOR_SERVICES_MAXTIME to 0 to wait forever ...
+export S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0
+
+# Remove existing container if it exists
+podman rm -f tedge 2>/dev/null || true
+
+podman run -d \
+--name tedge \
+--network tedge \
+--restart always \
+--replace \
+-p "1883:1883" \
+-p "8000:8000" \
+-p "8001:8001" \
+-v "tedge-data:/data/tedge" \
+-v "/home/tedge/edge/scripts/config:/local-conf" \
+-e TEDGE_C8Y_OPERATIONS_AUTO_LOG_UPLOAD=always \
+-e TEDGE_MQTT_BRIDGE_BUILT_IN=true \
+-e TEDGE_DEVICE_CERT_PATH=/local-conf/tedge-certificate.pem \
+"$FULL_IMAGE":"$HIGHEST_TAG"

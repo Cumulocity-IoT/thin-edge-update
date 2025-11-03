@@ -1,0 +1,20 @@
+# /etc/xdg/systemd/user/tedge-container.service
+[Unit]
+Description=thin-edge Container  
+After=network-online.target
+Wants=network-online.target tedge-container-restart.path
+Requires=podman.socket
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/home/tedge/edge/scripts/start-tedge-container.sh
+ExecStop=/usr/bin/podman stop -t 10 tedge
+ExecStopPost=/usr/bin/podman rm -f tedge
+Restart=on-failure
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

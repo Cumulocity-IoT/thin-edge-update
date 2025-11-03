@@ -1,0 +1,11 @@
+# /etc/xdg/systemd/user/tedge-container-restart.service
+[Unit]
+Description=Restart tedge container on request
+
+[Service]
+Type=oneshot
+TimeoutStartSec=30
+ExecStartPre=/bin/sleep 15
+ExecStart=/usr/bin/systemctl --user restart tedge-container.service
+StandardOutput=journal
+StandardError=journal
