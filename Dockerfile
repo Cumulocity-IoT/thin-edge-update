@@ -30,6 +30,7 @@ ENV PATH="/command:${PATH}"
 # Add custom config
 
 COPY files/restart_background.toml /etc/tedge/operations/
+COPY files/self_update.toml /etc/tedge/operations/
 
 
 # copy workflow

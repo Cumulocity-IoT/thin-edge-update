@@ -1,0 +1,69 @@
+operation = "self_update"
+
+[init]
+action = "proceed"
+on_success = "schedule"
+
+[schedule]
+action = "proceed"
+on_success = "executing"
+
+[executing]
+action = "proceed"
+on_success = "needs_update"
+
+[needs_update]
+script = "sudo -E tedge-container tools container-clone --image ${.payload.image} --container ${.payload.containerName} --check"
+on_exit.0 = "update"
+on_exit.2 = "successful"
+on_exit._ = "failed"
+
+[update]
+script = "sudo -E tedge-container tools container-clone --fork --image ${.payload.image} --container ${.payload.containerName} --fork-name ${.payload.containerName}-updater --stop-after 10s"
+on_success = "wait-for-container-stop"
+on_error = "failed"
+
+[wait-for-container-stop]
+# Wait for the container to stop
+background_script = "sleep 60"
+on_exec = "resume-update"
+
+[resume-update]
+# Wait before verifying to give the container updater to verify the image
+script = "sh -c 'sudo -E tedge-container self list && sleep 60'"
+on_success = "collect-logs"
+on_error = "collect-logs"
+
+[collect-logs]
+script = "sh -c 'sudo -E tedge-container tools container-logs ${.payload.containerName}-updater; sudo -E tedge-container tools container-remove ${.payload.containerName}-updater'"
+on_success = "verify"
+on_error = "verify"
+
+[verify]
+script = "sudo -E tedge-container tools container-clone --image ${.payload.image} --container ${.payload.containerName} --check"
+# Expected 2 which means no update is required (as it should of already happened).
+# If an update is still required, then it generally means something unexpected happened
+on_exit.0 = { status = "failed", reason = "Container was not updated" }
+on_exit.2 = "tedge-restart"
+on_exit._ = { status = "failed", reason = "Unexpected error checking container status" }
+
+[tedge-restart]
+background_script = '/etc/tedge/scripts/manage-restart.sh initiate-update'
+on_exec = "waiting-for-restart"
+
+[waiting-for-restart]
+action = "await-agent-restart"
+timeout_second = 180
+on_timeout = "timeout_restart"
+on_success = "successful"
+
+[timeout_restart]
+action = "proceed"
+on_success = "failed"
+
+
+[successful]
+action = "cleanup"
+
+[failed]
+action = "cleanup"
