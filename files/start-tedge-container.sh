@@ -104,4 +104,5 @@ podman run -d \
 -e TEDGE_C8Y_OPERATIONS_AUTO_LOG_UPLOAD=always \
 -e TEDGE_MQTT_BRIDGE_BUILT_IN=true \
 -e TEDGE_DEVICE_CERT_PATH=/local-conf/tedge-certificate.pem \
+-e TEDGE_DEVICE_KEY_PATH=/local-conf/tedge-private-key.pem \
 "$FULL_IMAGE":"$HIGHEST_TAG"
