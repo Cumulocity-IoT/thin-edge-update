@@ -63,7 +63,6 @@ get_highest_local_tag() {
         tail -1
 }
 
-FULL_IMAGE="${REGISTRY}/${IMAGE_NAME}"
 HIGHEST_TAG=$(get_highest_local_tag "$REGISTRY" "$IMAGE_NAME")
 
 if [[ -n "$HIGHEST_TAG" ]]; then
