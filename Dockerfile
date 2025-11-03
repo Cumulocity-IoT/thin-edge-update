@@ -38,7 +38,7 @@ RUN chmod 755 /etc/tedge/operations/*.toml
 
 
 RUN mkdir /etc/tedge/scripts
-COPY docker/files/tedge/manage-restart.sh /etc/tedge/scripts/manage-restart.sh
+COPY files/manage-restart.sh /etc/tedge/scripts/manage-restart.sh
 RUN chmod 755 /etc/tedge/scripts/manage-restart.sh
 
 USER "tedge"
