@@ -105,5 +105,6 @@ podman run -d \
 -e TEDGE_MQTT_BRIDGE_BUILT_IN=true \
 -e TEDGE_DEVICE_CERT_PATH=/local-conf/tedge-certificate.pem \
 -e TEDGE_DEVICE_KEY_PATH=/local-conf/tedge-private-key.pem \
+-v "/run/user/$UID/podman/podman.sock:/var/run/docker.sock:rw" \
 --env-file /home/tedge/edge/config/iot.cfg \
 "$FULL_IMAGE":"$HIGHEST_TAG"
