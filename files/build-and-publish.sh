@@ -3,40 +3,55 @@ set -e
 
 # Configuration
 REGISTRY="docker.io"
+DOCKER_USERNAME=""
 IMAGE_NAME="iot-thin-edge-solution"
 VERSION=$(date +%Y%m%d.%H%M)  # Format: YYYYMMDD.HHMM
-FULL_IMAGE="${REGISTRY}/${IMAGE_NAME}:${VERSION}"
+
+# Function to get docker hub username
+get_docker_username() {
+    DOCKER_USERNAME=$(podman login --get-login "${REGISTRY}" 2>/dev/null || echo "")
+    if [ -z "${DOCKER_USERNAME}" ]; then
+        echo "Error: Not logged in to Docker Hub"
+        return 1
+    fi
+    echo "Using Docker Hub username: ${DOCKER_USERNAME}"
+}
 
 # Function to check docker hub credentials
 check_docker_login() {
     echo "Checking Docker Hub login status..."
-    if ! podman login --get-login "${REGISTRY}" >/dev/null 2>&1; then
-        echo "Not logged in to Docker Hub. Please login first:"
+    if ! get_docker_username; then
+        echo "Please login first:"
         podman login "${REGISTRY}"
+        get_docker_username || exit 1
     fi
 }
 
 # Function to build the image
 build_image() {
     local build_id="$1"
-    echo "Building image ${FULL_IMAGE}..."
+    local full_image="${REGISTRY}/${DOCKER_USERNAME}/${IMAGE_NAME}:${VERSION}"
+    
+    echo "Building image ${full_image}..."
     podman build \
         --network=host \
         --build-arg BUILD_ID="${build_id}" \
         --format docker \
-        -t "${FULL_IMAGE}" \
+        -t "${full_image}" \
         .
     
     # Tag as latest
-    podman tag "${FULL_IMAGE}" "${REGISTRY}/${IMAGE_NAME}:latest"
+    podman tag "${full_image}" "${REGISTRY}/${DOCKER_USERNAME}/${IMAGE_NAME}:latest"
 }
 
 # Function to publish the image
 publish_image() {
-    echo "Publishing image ${FULL_IMAGE}..."
-    podman push "${FULL_IMAGE}"
+    local full_image="${REGISTRY}/${DOCKER_USERNAME}/${IMAGE_NAME}:${VERSION}"
+    
+    echo "Publishing image ${full_image}..."
+    podman push "${full_image}"
     echo "Publishing latest tag..."
-    podman push "${REGISTRY}/${IMAGE_NAME}:latest"
+    podman push "${REGISTRY}/${DOCKER_USERNAME}/${IMAGE_NAME}:latest"
 }
 
 # Main execution
@@ -47,7 +62,7 @@ main() {
         exit 1
     fi
 
-    # Check Docker Hub login
+    # Check Docker Hub login and get username
     check_docker_login
 
     # Build the image
@@ -57,8 +72,8 @@ main() {
     publish_image
 
     echo "Successfully built and published:"
-    echo "  - ${FULL_IMAGE}"
-    echo "  - ${REGISTRY}/${IMAGE_NAME}:latest"
+    echo "  - ${REGISTRY}/${DOCKER_USERNAME}/${IMAGE_NAME}:${VERSION}"
+    echo "  - ${REGISTRY}/${DOCKER_USERNAME}/${IMAGE_NAME}:latest"
 }
 
 # Run main function
