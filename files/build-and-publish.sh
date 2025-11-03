@@ -21,6 +21,7 @@ build_image() {
     local build_id="$1"
     echo "Building image ${FULL_IMAGE}..."
     podman build \
+        --network=host \
         --build-arg BUILD_ID="${build_id}" \
         --format docker \
         -t "${FULL_IMAGE}" \

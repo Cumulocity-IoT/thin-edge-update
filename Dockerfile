@@ -33,7 +33,7 @@ COPY files/restart_background.toml /etc/tedge/operations/
 
 
 # copy workflow
-COPY docker/workflows/toml/* /etc/tedge/operations/
+COPY files/*.toml /etc/tedge/operations/
 RUN chmod 755 /etc/tedge/operations/*.toml
 
 
