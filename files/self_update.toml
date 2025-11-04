@@ -55,6 +55,10 @@ on_exec = "waiting-for-restart"
 action = "await-agent-restart"
 timeout_second = 180
 on_timeout = "timeout_restart"
+on_success = "restart_successful"
+
+[restart_successful]
+action = "proceed"
 on_success = "successful"
 
 [timeout_restart]
