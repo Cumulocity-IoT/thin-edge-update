@@ -8,6 +8,7 @@ case "$COMMAND" in
         docker image list --format '{{.Repository}}\t{{.Tag}}' || exit 2
         ;;
     install)
+        # just pulls image and doe snot start a container
         docker pull $IMAGE_NAME || exit 2
         ;;
     remove)
