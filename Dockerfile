@@ -39,8 +39,8 @@ RUN chmod 755 /etc/tedge/operations/*.toml
 RUN mkdir /etc/tedge/scripts
 COPY tedge/manage-restart.sh /etc/tedge/scripts/manage-restart.sh
 RUN chmod 755 /etc/tedge/scripts/manage-restart.sh
-COPY tedge/manage-restart.sh /etc/tedge/sm-plugins/container-extern
-RUN chmod 755 /etc/tedge/sm-plugins/container-extern
+COPY tedge/manage-restart.sh /etc/tedge/sm-plugins/container-image
+RUN chmod 755 /etc/tedge/sm-plugins/container-image
 
 USER "tedge"
 # Allow users to re-use the container for one-off commands
