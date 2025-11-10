@@ -1,0 +1,24 @@
+#!/bin/sh
+
+COMMAND="$1"
+IMAGE_NAME="$2"
+
+case "$COMMAND" in
+    list)
+        docker image list --format '{{.Repository}}\t{{.Tag}}' || exit 2
+        ;;
+    install)
+        docker pull $IMAGE_NAME || exit 2
+        ;;
+    remove)
+        docker rmi $IMAGE_NAME || exit 2
+        ;;
+    prepare)
+        ;;
+    finalize)
+        ;;
+    update-list)
+        exit 1
+        ;;
+esac
+exit 0

@@ -25,22 +25,22 @@ RUN echo "Build Id: ${BUILD_ID}" > /etc/tedge/buildId
 
 ENV PATH="/command:${PATH}"
 
-# copy controler specific toml files
-
 # Add custom config
 
-COPY files/restart_background.toml /etc/tedge/operations/
-COPY files/self_update.toml /etc/tedge/operations/
+COPY tedge/restart_background.toml /etc/tedge/operations/
+COPY tedge/self_update.toml /etc/tedge/operations/
 
 
 # copy workflow
-COPY files/*.toml /etc/tedge/operations/
+COPY tedge/*.toml /etc/tedge/operations/
 RUN chmod 755 /etc/tedge/operations/*.toml
 
 
 RUN mkdir /etc/tedge/scripts
-COPY files/manage-restart.sh /etc/tedge/scripts/manage-restart.sh
+COPY tedge/manage-restart.sh /etc/tedge/scripts/manage-restart.sh
 RUN chmod 755 /etc/tedge/scripts/manage-restart.sh
+COPY tedge/manage-restart.sh /etc/tedge/sm-plugins/container-extern
+RUN chmod 755 /etc/tedge/sm-plugins/container-extern
 
 USER "tedge"
 # Allow users to re-use the container for one-off commands
