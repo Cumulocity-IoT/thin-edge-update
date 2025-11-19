@@ -1,0 +1,21 @@
+[Unit]
+Description=thin-edge Container
+After=network-online.target
+Wants=network-online.target tedge-container-restart.path
+Requires=podman.socket
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/podman start -a tedge
+ExecStartPre=-/usr/bin/podman stop -t 10 tedge
+ExecStartPre=-/usr/bin/podman rm -f tedge
+ExecStartPre=/home/tedge/edge/scripts/start-tedge-watch-container.sh
+ExecStop=/usr/bin/podman stop -t 10 tedge
+ExecStopPost=/usr/bin/podman rm -f tedge
+Restart=always
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
