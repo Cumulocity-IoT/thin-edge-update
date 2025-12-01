@@ -6,12 +6,12 @@ Requires=podman.socket
 
 [Service]
 Type=exec
-ExecStart=/usr/bin/podman start -a tedge
-ExecStartPre=-/usr/bin/podman stop -t 10 tedge
-ExecStartPre=-/usr/bin/podman rm -f tedge
+ExecStart=/usr/bin/podman start -a tedge-watch
+ExecStartPre=-/usr/bin/podman stop -t 10 tedge-watch
+ExecStartPre=-/usr/bin/podman rm -f tedge-watch
 ExecStartPre=/home/tedge/edge/scripts/start-tedge-watch-container.sh
-ExecStop=/usr/bin/podman stop -t 10 tedge
-ExecStopPost=/usr/bin/podman rm -f tedge
+ExecStop=/usr/bin/podman stop -t 10 tedge-watch
+ExecStopPost=/usr/bin/podman rm -f tedge-watch
 Restart=always
 RestartSec=30
 StandardOutput=journal

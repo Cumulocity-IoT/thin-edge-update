@@ -9,7 +9,7 @@ action = "proceed"
 on_success = "tedge-restart"
 
 [tedge-restart]
-background_script = '/etc/tedge/scripts/manage-restart.sh initiate-update'
+background_script = '/etc/tedge/scripts/manage-update.sh initiate-update'
 on_exec = "waiting-for-restart"
 
 [waiting-for-restart]

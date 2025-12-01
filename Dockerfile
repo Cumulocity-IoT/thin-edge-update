@@ -29,17 +29,23 @@ ENV PATH="/command:${PATH}"
 
 COPY tedge/restart_background.toml /etc/tedge/operations/
 COPY tedge/self_update.toml /etc/tedge/operations/
+COPY tedge/software_update.toml /etc/tedge/operations/
 
 
-# copy workflow
+# Copy workflow
 COPY tedge/*.toml /etc/tedge/operations/
 RUN chmod 755 /etc/tedge/operations/*.toml
 
 
+# Copy workflow
+COPY tedge/container-image /etc/tedge/sm-plugins/
+RUN chmod 755 etc/tedge/sm-plugins/container-image
+
+
 RUN mkdir /etc/tedge/scripts
-COPY tedge/manage-restart.sh /etc/tedge/scripts/manage-restart.sh
-RUN chmod 755 /etc/tedge/scripts/manage-restart.sh
-COPY tedge/manage-restart.sh /etc/tedge/sm-plugins/container-image
+COPY tedge/manage-update.sh /etc/tedge/scripts/manage-update.sh
+RUN chmod 755 /etc/tedge/scripts/manage-update.sh
+COPY tedge/manage-update.sh /etc/tedge/sm-plugins/container-image
 RUN chmod 755 /etc/tedge/sm-plugins/container-image
 
 USER "tedge"

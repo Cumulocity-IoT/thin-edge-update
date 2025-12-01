@@ -2,7 +2,7 @@
 set -e
 
 # Configuration
-IMAGE_NAME="iot-thin-edge-solution"
+IMAGE_NAME="test-nginx"
 CONFIG_FILE="/home/tedge/edge/config/update-${IMAGE_NAME}.cfg"
 REGISTRY="docker.io"
 
@@ -148,23 +148,16 @@ echo "  LATEST_IMAGE=$LATEST_IMAGE"
 export S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0
 
 # Remove existing container if it exists
-podman rm -f tedge 2>/dev/null || true
+podman rm -f business 2>/dev/null || true
 
 podman run -d \
 --userns keep-id \
---name tedge \
---network tedge \
+--name business \
+--network business \
 --restart always \
 --replace \
 -p "1883:1883" \
 -p "8000:8000" \
 -p "8001:8001" \
--v "tedge-data:/data/tedge" \
 -v "/home/tedge/edge/config:/local-conf" \
--e TEDGE_C8Y_OPERATIONS_AUTO_LOG_UPLOAD=always \
--e TEDGE_MQTT_BRIDGE_BUILT_IN=true \
--e TEDGE_DEVICE_CERT_PATH=/local-conf/tedge-certificate.pem \
--e TEDGE_DEVICE_KEY_PATH=/local-conf/tedge-private-key.pem \
--v "/run/user/$UID/podman/podman.sock:/var/run/docker.sock:rw" \
---env-file /home/tedge/edge/config/iot.cfg \
 "$LATEST_IMAGE"
