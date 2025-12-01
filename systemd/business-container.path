@@ -1,0 +1,10 @@
+# /etc/xdg/systemd/user/business-container-restart.path
+[Unit]
+Description=Monitor business container for changes
+
+[Path]
+PathModified=/home/tedge/edge/config/update-test-nginx.cfg
+Unit=business-container-restart.service
+
+[Install]
+WantedBy=default.target

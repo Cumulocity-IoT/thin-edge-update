@@ -72,7 +72,8 @@ get_highest_local_tag() {
     local image="$3"
     local full_image="${registry}/${username}/${image}"
     
-    local highest=$(podman images --format '{.Repository}:{.Tag}' | \
+    local highest
+    highest=$(podman images --format '{.Repository}:{.Tag}' | \
                     grep "^${full_image}:" | \
                     sed "s|^${full_image}:||" | \
                     grep -E '^[0-9]+(\.[0-9]+)*$' | \
