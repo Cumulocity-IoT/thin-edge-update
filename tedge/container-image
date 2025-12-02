@@ -2,6 +2,8 @@
 
 COMMAND="$1"
 IMAGE_NAME="$2"
+OPTION="$3"
+MODUL_VERSION="$4"
 
 case "$COMMAND" in
     list)
@@ -9,10 +11,10 @@ case "$COMMAND" in
         ;;
     install)
         # just pulls image and does not start a container
-        docker pull $IMAGE_NAME || exit 2
+        docker pull $MODUL_VERSION || exit 2
         ;;
     remove)
-        docker rmi $IMAGE_NAME || exit 2
+        docker rmi $MODUL_VERSION || exit 2
         ;;
     prepare)
         ;;

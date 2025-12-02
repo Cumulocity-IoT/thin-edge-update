@@ -9,7 +9,7 @@ action = "proceed"
 on_success = "check-test-nginx"
 
 [check-test-nginx]
-script = "manage-update check test-nginx ${.payload.updateList}"
+script = "/etc/tedge/scripts/manage-update.sh check test-nginx ${.payload.updateList}"
 on_exit.0 = "process"
 on_exit.1 = "check"
 on_exit._ = "failed"
@@ -41,7 +41,7 @@ on_success = "trigger-restart"
 on_kill = ""
 
 [trigger-restart]
-script = "manage-update restart test-nginx ${.payload.updateList}"
+script = "/etc/tedge/scripts/manage-update.sh restart test-nginx ${.payload.updateList}"
 on_success = "successful"
 
 [successful]

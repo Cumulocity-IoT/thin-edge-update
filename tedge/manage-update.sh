@@ -50,7 +50,7 @@ restart_update() {
     fi
     
     # Write to config file
-    local config_file="${LOCAL_CONF_DIR}/${name}.cfg"
+    local config_file="${LOCAL_CONF_DIR}/update-${name}.cfg"
     echo "CURRENT_IMAGE=${module_version}" > "${config_file}"
     echo "Config written to ${config_file}: CURRENT_IMAGE=${module_version}"
     
