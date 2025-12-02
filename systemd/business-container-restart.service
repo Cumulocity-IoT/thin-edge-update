@@ -9,3 +9,6 @@ ExecStartPre=/bin/sleep 15
 ExecStart=/usr/bin/systemctl --user restart business-container.service
 StandardOutput=journal
 StandardError=journal
+
+[Install]
+WantedBy=default.target

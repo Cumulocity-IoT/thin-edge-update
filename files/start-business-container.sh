@@ -154,11 +154,8 @@ podman rm -f business 2>/dev/null || true
 podman run -d \
 --userns keep-id \
 --name business \
---network business \
+--network tedge \
 --restart always \
 --replace \
--p "1883:1883" \
--p "8000:8000" \
--p "8001:8001" \
 -v "/home/tedge/edge/config:/local-conf" \
 "$LATEST_IMAGE"
