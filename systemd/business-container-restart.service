@@ -1,0 +1,11 @@
+# /etc/xdg/systemd/user/business-container-restart.service
+[Unit]
+Description=Restart business container on request
+
+[Service]
+Type=oneshot
+TimeoutStartSec=30
+ExecStartPre=/bin/sleep 15
+ExecStart=/usr/bin/systemctl --user restart business-container.service
+StandardOutput=journal
+StandardError=journal
