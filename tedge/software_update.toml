@@ -8,11 +8,12 @@ on_success = "executing"
 action = "proceed"
 on_success = "check-test-nginx"
 
-[check-test-nginx]
-script = "/etc/tedge/scripts/manage-update.sh check test-nginx ${.payload.updateList}"
-on_exit.0 = "process"
-on_exit.1 = "check"
-on_exit._ = "failed"
+# Not required at the moment
+# [check-test-nginx]
+# script = "/etc/tedge/scripts/manage-update.sh check test-nginx ${.payload.updateList}"
+# on_exit.0 = "process"
+# on_exit.1 = "check"
+# on_exit._ = "failed"
 
 [check]
 script = "sudo -E tedge-container self check ${.payload.updateList}"
@@ -40,6 +41,8 @@ action = "await-operation-completion"
 on_success = "trigger-restart"
 on_kill = ""
 
+# Trigger restart externally by writing to /local-conf/update-test-nginx.cfg
+# Then service unit business-container-restart.path watches this file on the host and restarts business-container.service
 [trigger-restart]
 script = "/etc/tedge/scripts/manage-update.sh restart test-nginx ${.payload.updateList}"
 on_success = "successful"
