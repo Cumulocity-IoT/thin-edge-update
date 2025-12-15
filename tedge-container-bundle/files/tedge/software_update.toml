@@ -1,0 +1,41 @@
+operation = "software_update"
+
+[init]
+action = "proceed"
+on_success = "executing"
+
+[executing]
+action = "proceed"
+on_success = "check"
+
+[check]
+script = "sudo -E tedge-container self check ${.payload.updateList}"
+on_exit.0 = "container_self_update"
+on_exit.1 = "process"
+on_exit._ = "failed"
+
+[container_self_update]
+# Optional step where a self-update is performed
+operation = "self_update"
+input.image = "${.payload.image}"
+input.containerName = "${.payload.containerName}"
+on_exec = "await-self-update"
+
+[await-self-update]
+action = "await-operation-completion"
+on_success = "process"
+
+[process]
+operation = "builtin:software_update"
+on_exec = "wait-for-update"
+
+[wait-for-update]
+action = "await-operation-completion"
+on_success = "successful"
+on_kill = ""
+
+[successful]
+action = "cleanup"
+
+[failed]
+action = "cleanup"

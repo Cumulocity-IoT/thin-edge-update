@@ -3,7 +3,9 @@
 # The image iot-thin-edge-container-bundle is built in the azure pipeline and contains the latest thin-edge.io version
 ###
 
-FROM ghcr.io/thin-edge/tedge-container-bundle:20251030.1508 AS release
+# Want to reference the image from the Docker file tedge-container-bundle/Dockerfile as baseline
+# FROM ghcr.io/thin-edge/tedge-container-bundle:20251030.1508 AS release
+FROM krydosdocker/tedge-container-bundle:1.7.1 AS release
 
 ###
 # project specific changes

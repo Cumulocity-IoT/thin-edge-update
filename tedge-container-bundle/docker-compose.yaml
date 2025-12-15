@@ -1,0 +1,22 @@
+services:
+  tedge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - C8Y_DOMAIN=${C8Y_DOMAIN:-}
+      - DEVICE_ID=${DEVICE_ID:-}
+      - DEVICE_ONE_TIME_PASSWORD=${DEVICE_ONE_TIME_PASSWORD:-}
+      - CA=${CA:-c8y}
+    tmpfs:
+      - /tmp
+    volumes:
+      - device-certs:/etc/tedge/device-certs
+      - tedge:/data/tedge
+      # Enable docker from docker
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+
+volumes:
+  device-certs:
+  tedge:
